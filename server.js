@@ -1,30 +1,55 @@
 // server.js
 // where your node app starts
+var moment = require('moment');
 
 // init project
 var express = require('express');
 var app = express();
 
+app.use(express.static(__dirname + '/build/'));
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname, '/build/index.html');
+});
+
+const formatUnix = (date) => {
+  return +moment.utc(date / 1000).format('x');
+};
+
+const formatUTC = (date) => {
+  return moment.utc(date / 1000).format('ddd, DD MMM YYYY HH:mm:ss') + ' GMT';
+};
+
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
-// so that your API is remotely testable by FCC 
+// so that your API is remotely testable by FCC
 var cors = require('cors');
-app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
+app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
 
-// http://expressjs.com/en/starter/static-files.html
-app.use(express.static('public'));
-
-// http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
+app.get('/api/timestamp/', (req, res) => {
+  const currentDate = moment();
+  res.json({
+    unix: formatUnix(currentDate),
+    utc: formatUTC(currentDate),
+  });
 });
 
+app.get('/api/timestamp/:date', (req, res) => {
+  let { date } = req.params;
+  if (!moment(date).isValid()) {
+    console.log(date);
+    date = moment.unix(date);
+    console.log(date);
+  }
 
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+  if (moment(date).isValid()) {
+    res.json({
+      unix: formatUnix(date),
+      utc: formatUTC(date),
+    });
+  } else {
+    res.send({ error: 'Invalid Date' });
+  }
 });
-
-
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
