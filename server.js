@@ -37,7 +37,7 @@ app.get('/api/timestamp/:date', (req, res) => {
   let { date } = req.params;
   if (!moment(date).isValid()) {
     console.log(date);
-    date = moment.unix(date);
+    date = moment.unix(date / 100);
     console.log(date);
   }
 
