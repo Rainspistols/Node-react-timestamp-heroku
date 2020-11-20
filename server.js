@@ -13,11 +13,11 @@ app.get('/', (req, res) => {
 });
 
 const formatUnix = (date) => {
-  return +moment.utc(date / 1000).format('x');
+  return +moment.utc(date).format('x');
 };
 
 const formatUTC = (date) => {
-  return moment.utc(date / 1000).format('ddd, DD MMM YYYY HH:mm:ss') + ' GMT';
+  return moment.utc(date).format('ddd, DD MMM YYYY HH:mm:ss') + ' GMT';
 };
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
@@ -52,6 +52,6 @@ app.get('/api/timestamp/:date', (req, res) => {
 });
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(8080, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
